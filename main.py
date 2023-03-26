@@ -15,7 +15,7 @@ clock = pygame.time.Clock()
 
 player1 = Player()
 pbGroup = pygame.sprite.Group()
-heart = pygame.image.load("heart.png")
+heart = pygame.image.load("CS152-Project/images/heart.png")
 
 gameIsRunning = True
 

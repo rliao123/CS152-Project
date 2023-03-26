@@ -7,7 +7,7 @@ import random
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("player.png")
+        self.image = pygame.image.load("CS152-Project/images/player.png")
         self.rect = self.image.get_rect()
         self.rect.center = (160, 550)
         self.lives = 3
