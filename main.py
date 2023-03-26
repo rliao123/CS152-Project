@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 import random
+from CharacterObject.Player import Player, drawLives
 
 pygame.init()
 
