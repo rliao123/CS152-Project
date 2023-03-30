@@ -56,6 +56,9 @@ while gameIsRunning:
         enemy.move_in_pattern(path_pattern_5, 10)
     elif enemy.health == 0:
         enemy.kill()
+        print("YOU WIN")
+
+    enemy.health -= 100
 
     drawLives(screen, 500, 550, player1.lives, heart)
     draw_health_bar(screen, 300, 20, enemy.health, enemy.max_health)
