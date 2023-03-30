@@ -1,7 +1,7 @@
-import pygame
+import pygame, sys
 from CharacterObject.Enemy import Enemy, draw_health_bar
 from pygame.locals import *
-import random
+import random, time
 from CharacterObject.Player import Player, draw_lives
 
 pygame.init()
@@ -11,6 +11,12 @@ WIDTH = 600
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Game")
+
+# fonts and text
+font = pygame.font.SysFont("Arial", 60)
+game_over = font.render("Game Over", True, (255, 255, 255))
+you_win = font.render("YOU WIN!", True, (0, 255, 0))
+you_lost = font.render("YOU LOST :(", True, (255, 0, 0))
 
 # Init enemy instance
 enemy = Enemy(50, 50, 300, 150, 100000)
@@ -51,6 +57,18 @@ while gameIsRunning:
             angle += 30
             enemy_bullet_group.add(enemy.create_bullet(angle))
 
+    # check for collisions between player and enemy bullets
+    for enemy_bullet in enemy_bullet_group:
+        if enemy_bullet.rect.colliderect(player1.rect):
+            player1.lives -= 1
+            enemy_bullet.kill()
+
+    # check for collisions between enemy and player bullets
+    for player_bullet in player_bullet_group:
+        if player_bullet.rect.colliderect(enemy.rect):
+            player_bullet.kill()
+            enemy.health -= 100  # not updating the health bar
+
     player1.update()
     player_bullet_group.update()
     screen.fill((0, 0, 0))
@@ -72,12 +90,29 @@ while gameIsRunning:
         enemy.move_in_pattern(path_pattern_5, 10)
     elif enemy.health == 0:
         enemy.kill()
+        screen.fill((0, 0, 0))
+        screen.blit(game_over, (145, 200))
+        screen.blit(you_win, (160, 250))
+        pygame.display.update()
+        time.sleep(4)
+        pygame.quit()
+        sys.exit()
         print("YOU WIN")
 
-    enemy.health -= 100
+    # enemy.health -= 100
 
     draw_lives(screen, 500, 550, player1.lives, heart)
     draw_health_bar(screen, 300, 20, enemy.health, enemy.max_health)
+
+    # game over if player has no more lives
+    if player1.lives == 0:
+        screen.fill((0, 0, 0))
+        screen.blit(game_over, (145, 200))
+        screen.blit(you_lost, (135, 250))
+        pygame.display.update()
+        time.sleep(4)
+        pygame.quit()
+        sys.exit()
 
     # Update the screen at 60 FPS
     pygame.display.flip()
