@@ -81,9 +81,9 @@ while gameIsRunning:
     screen.fill((40, 127, 71))
     player1.draw(screen)
     player_bullet_group.draw(screen)
-    enemy_group.draw(screen)
     enemy_bullet_group.update()
     enemy_bullet_group.draw(screen)
+    enemy_group.draw(screen)
 
     # enemy movement and bullet patterns
     now = pygame.time.get_ticks()
@@ -102,7 +102,7 @@ while gameIsRunning:
             do_bullet_pattern(6, 4)
 
     elif enemy.health >= enemy.max_health * (2 / 5):
-        enemy.move_in_pattern(path_pattern_3, 5)
+        enemy.move_in_pattern(path_pattern_3, 3)
 
         if now > enemy_next_time:
             enemy_next_time += 200
