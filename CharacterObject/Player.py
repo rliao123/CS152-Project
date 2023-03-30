@@ -15,34 +15,34 @@ class Player(pygame.sprite.Sprite):
         self.hideTimer = pygame.time.get_ticks()
 
     def update(self):
-        keyPressed = pygame.key.get_pressed()
+        key_pressed = pygame.key.get_pressed()
 
         if self.rect.top > 0:
-            if keyPressed[K_UP] and keyPressed[K_LSHIFT]:
+            if key_pressed[K_UP] and key_pressed[K_LSHIFT]:
                 self.rect.move_ip(0, -1)
-            if keyPressed[K_UP] and not keyPressed[K_LSHIFT]:
+            if key_pressed[K_UP] and not key_pressed[K_LSHIFT]:
                 self.rect.move_ip(0, -5)
         if self.rect.bottom < 600:
-            if keyPressed[K_DOWN] and keyPressed[K_LSHIFT]:
+            if key_pressed[K_DOWN] and key_pressed[K_LSHIFT]:
                 self.rect.move_ip(0, 1)
-            if keyPressed[K_DOWN] and not keyPressed[K_LSHIFT]:
+            if key_pressed[K_DOWN] and not key_pressed[K_LSHIFT]:
                 self.rect.move_ip(0, 5)
 
         if self.rect.left > 0:
-            if keyPressed[K_LEFT] and keyPressed[K_LSHIFT]:
+            if key_pressed[K_LEFT] and key_pressed[K_LSHIFT]:
                 self.rect.move_ip(-1, 0)
-            if keyPressed[K_LEFT] and not keyPressed[K_LSHIFT]:
+            if key_pressed[K_LEFT] and not key_pressed[K_LSHIFT]:
                 self.rect.move_ip(-5, 0)
         if self.rect.right < 600:
-            if keyPressed[K_RIGHT] and keyPressed[K_LSHIFT]:
+            if key_pressed[K_RIGHT] and key_pressed[K_LSHIFT]:
                 self.rect.move_ip(1, 0)
-            if keyPressed[K_RIGHT] and not keyPressed[K_LSHIFT]:
+            if key_pressed[K_RIGHT] and not key_pressed[K_LSHIFT]:
                 self.rect.move_ip(5, 0)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
-    def createBullet(self):
+    def create_bullet(self):
         # create bullet from top center of sprite
         return PlayerBullets(self.rect.x + 50 / 2, self.rect.y)
 
@@ -50,7 +50,7 @@ class Player(pygame.sprite.Sprite):
 player1 = Player()
 
 
-def drawLives(surf, x, y, lives, img):
+def draw_lives(surf, x, y, lives, img):
     for i in range(lives):
         img_rect = img.get_rect()
         img_rect.x = x + 33 * i

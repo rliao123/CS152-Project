@@ -1,4 +1,5 @@
 import pygame
+from .EnemyBullets import EnemyBullets
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -38,6 +39,9 @@ class Enemy(pygame.sprite.Sprite):
     def fire_bullet(self):
         print("aah")
         return True
+
+    def create_bullet(self, angle):
+        return EnemyBullets(self.rect.centerx, self.rect.centery, angle)
 
 
 def draw_health_bar(surf, x, y, health, max_health):
