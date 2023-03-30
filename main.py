@@ -1,5 +1,5 @@
 import pygame
-from CharacterObject.Enemy import Enemy
+from CharacterObject.Enemy import Enemy, draw_health_bar
 from pygame.locals import *
 import random
 from CharacterObject.Player import Player, drawLives
@@ -17,8 +17,8 @@ enemy = Enemy(50, 50, 300, 150, 100000)
 enemy_group = pygame.sprite.Group()
 enemy_group.add(enemy)
 
-path_pattern_1 = [(100, 150), (300, 150), (500, 150), (300, 150)]
-path_pattern_2 = [(300, 200)]
+path_pattern_1 = [(300, 200)]
+path_pattern_2 = [(100, 150), (300, 150), (500, 150), (300, 150)]
 path_pattern_3 = [(100, 100), (500, 200), (500, 100), (100, 200)]
 path_pattern_4 = [(300, 200)]
 path_pattern_5 = [(100, 100), (500, 200), (500, 100), (100, 200)]
@@ -44,10 +44,21 @@ while gameIsRunning:
     pbGroup.draw(screen)
     enemy_group.draw(screen)
 
-    if enemy.health == enemy.max_health:
+    if enemy.health >= enemy.max_health * (4/5):
         enemy.move_in_pattern(path_pattern_1, 2)
+    elif enemy.health >= enemy.max_health * (3/5):
+        enemy.move_in_pattern(path_pattern_2, 2)
+    elif enemy.health >= enemy.max_health * (2/5):
+        enemy.move_in_pattern(path_pattern_3, 5)
+    elif enemy.health >= enemy.max_health * (1/5):
+        enemy.move_in_pattern(path_pattern_4, 5)
+    elif enemy.health > enemy.max_health * (0/5):
+        enemy.move_in_pattern(path_pattern_5, 10)
+    elif enemy.health == 0:
+        enemy.kill()
 
-    drawLives(screen, 500, 5, player1.lives, heart)
+    drawLives(screen, 500, 550, player1.lives, heart)
+    draw_health_bar(screen, 300, 20, enemy.health, enemy.max_health)
 
     # Update the screen at 60 FPS
     pygame.display.flip()

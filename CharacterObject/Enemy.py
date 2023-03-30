@@ -38,3 +38,11 @@ class Enemy(pygame.sprite.Sprite):
     def fire_bullet(self):
         print("aah")
         return True
+
+
+def draw_health_bar(surf, x, y, health, max_health):
+    health_bar = pygame.Surface([(health / max_health) * 500, y / 2])
+    health_bar.fill((255, 255, 255))
+    health_bar_rect = health_bar.get_rect()
+    health_bar_rect.center = [x, y]
+    surf.blit(health_bar, health_bar_rect)
