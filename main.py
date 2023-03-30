@@ -19,7 +19,7 @@ you_win = font.render("YOU WIN!", True, (0, 255, 0))
 you_lost = font.render("YOU LOST :(", True, (255, 0, 0))
 
 # Init enemy instance
-enemy = Enemy(50, 50, 300, 150, 10000)
+enemy = Enemy(50, 50, 300, 150, 20000)
 enemy_group = pygame.sprite.Group()
 enemy_group.add(enemy)
 
