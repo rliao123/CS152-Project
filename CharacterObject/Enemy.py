@@ -2,8 +2,6 @@ import pygame
 
 
 class Enemy(pygame.sprite.Sprite):
-    debug = True
-
     def __init__(self, w, h, x, y, max_health):
         super().__init__()
         self.image = pygame.Surface([w, h])  # replace with image later
@@ -14,36 +12,29 @@ class Enemy(pygame.sprite.Sprite):
         self.y = y
         self.max_health = max_health
         self.health = max_health
-        self.iterator = 0
 
     def update(self):
         self.rect.center = [self.x, self.y]
-        if debug:
-            print(self.rect.center)
         return True
 
-    def move(self, x, y, vel):
-        ax, bx = self.x, x
-        ay, by = self.y, y
-        dx, dy = (bx - ax), (by - ay)
-        step_x, step_y = (dx / 60.), (dy / 60.)  # float
+    def move_in_pattern(self, path, vel):
+        direction = pygame.math.Vector2(path[0]) - (self.x, self.y)
 
-        self.x = self.x + vel * step_x
-        self.y = self.y + vel * step_y
-        self.update()
-
-        if self.x != x or self.y != y:
-            return False  # not finished moving
+        if direction.length() <= vel:
+            self.x = path[0][0]
+            self.y = path[0][1]
+            path.append(path[0])
+            path.pop(0)
         else:
-            return True  # finished moving
+            direction.scale_to_length(vel)
+            new_pos = pygame.math.Vector2((self.x, self.y)) + direction
+            self.x = new_pos.x
+            self.y = new_pos.y
+            self.update()
 
-    def pattern1(self):
-        match self.iterator:
-            case 0:
-                m1 = self.move(150, 150, 4)
-                if m1:
-                    self.iterator += 1
-            case 1:
-                m2 = self.move(450, 150, 4)
-                if m2:
-                    self.iterator += 1
+        cur_pos = (self.x, self.y)
+        return cur_pos
+
+    def fire_bullet(self):
+        print("aah")
+        return True
