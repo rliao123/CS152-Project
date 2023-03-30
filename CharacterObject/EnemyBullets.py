@@ -14,8 +14,8 @@ class EnemyBullets(pygame.sprite.Sprite):
         self.angle = angle
 
     def update(self):
-        self.rect.x += 5 * math.cos(math.radians(self.angle))
-        self.rect.y += 5 * math.sin(math.radians(self.angle))
+        self.rect.x += 4 * math.cos(math.radians(self.angle))
+        self.rect.y += 4 * math.sin(math.radians(self.angle))
         if self.rect.top < 0 or self.rect.bottom > 600 or self.rect.right > 600 or self.rect.left < 0:
             self.kill()
 
