@@ -24,9 +24,9 @@ enemy_group = pygame.sprite.Group()
 enemy_group.add(enemy)
 
 path_pattern_1 = [(100, 150), (300, 150), (500, 150), (300, 150)]
-path_pattern_2 = [(300, 200)]
-path_pattern_3 = [(100, 100), (500, 200), (500, 100), (100, 200)]
-path_pattern_4 = [(300, 200)]
+path_pattern_2 = [(100, 100), (500, 200), (500, 100), (100, 200)]
+path_pattern_3 = [(300, 200)]
+path_pattern_4 = [(100, 300), (300, 100), (500, 300), (100, 175), (500, 175)]
 path_pattern_5 = [(100, 100), (500, 200), (500, 100), (100, 200)]
 
 # Init player instance
@@ -37,6 +37,12 @@ heart = pygame.image.load("images/heart.png")
 
 player_next_time = 0  # for time counting
 enemy_next_time = 0  # for time counting
+
+
+def do_bullet_pattern(bullet_amount, speed):
+    for b in range(bullet_amount):
+        enemy_bullet_group.add(enemy.create_bullet(b*(360/bullet_amount), speed))
+
 
 gameIsRunning = True
 
@@ -57,15 +63,6 @@ while gameIsRunning:
         player_next_time += wait
         if key_pressed[K_z]:
             player_bullet_group.add(player1.create_bullet())
-
-    # enemy bullets
-    wait = 500  # enemy shoot bullets every 1.5 seconds
-    now = pygame.time.get_ticks()
-    if now > enemy_next_time:
-        enemy_next_time += wait
-        for i in range(12):
-            angle += 30
-            enemy_bullet_group.add(enemy.create_bullet(angle))
 
     # check for collisions between player and enemy bullets
     for enemy_bullet in enemy_bullet_group:
@@ -88,17 +85,44 @@ while gameIsRunning:
     enemy_bullet_group.update()
     enemy_bullet_group.draw(screen)
 
+    # enemy movement and bullet patterns
+    now = pygame.time.get_ticks()
     if enemy.health >= enemy.max_health * (4 / 5):
         enemy.move_in_pattern(path_pattern_1, 2)
+
+        if now > enemy_next_time:
+            enemy_next_time += 1000
+            do_bullet_pattern(4, 4)
+
     elif enemy.health >= enemy.max_health * (3 / 5):
-        enemy.move_in_pattern(path_pattern_2, 2)
+        enemy.move_in_pattern(path_pattern_2, 5)
+
+        if now > enemy_next_time:
+            enemy_next_time += 600
+            do_bullet_pattern(6, 4)
+
     elif enemy.health >= enemy.max_health * (2 / 5):
         enemy.move_in_pattern(path_pattern_3, 5)
+
+        if now > enemy_next_time:
+            enemy_next_time += 200
+            do_bullet_pattern(16, 12)
+
     elif enemy.health >= enemy.max_health * (1 / 5):
         enemy.move_in_pattern(path_pattern_4, 5)
+
+        if now > enemy_next_time:
+            enemy_next_time += 400
+            do_bullet_pattern(12, 2)
+
     elif enemy.health > enemy.max_health * (0 / 5):
-        enemy.move_in_pattern(path_pattern_5, 10)
-    elif enemy.health == 0:
+        enemy.move_in_pattern(path_pattern_5, 20)
+
+        if now > enemy_next_time:
+            enemy_next_time += 200
+            do_bullet_pattern(28, 2)
+
+    elif enemy.health <= 0:
         enemy.kill()
         screen.fill((0, 0, 0))
         screen.blit(game_over, (145, 200))
@@ -107,11 +131,8 @@ while gameIsRunning:
         time.sleep(4)
         pygame.quit()
         sys.exit()
-        print("YOU WIN")
 
-    # enemy.health -= 100
-
-    draw_lives(screen, 500, 550, player1.lives, heart)
+    draw_lives(screen, 500, 566, player1.lives, heart)
     draw_health_bar(screen, 300, 20, enemy.health, enemy.max_health)
 
     # game over if player has no more lives

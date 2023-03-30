@@ -36,12 +36,8 @@ class Enemy(pygame.sprite.Sprite):
         cur_pos = (self.x, self.y)
         return cur_pos
 
-    def fire_bullet(self):
-        print("aah")
-        return True
-
-    def create_bullet(self, angle):
-        return EnemyBullets(self.rect.centerx, self.rect.centery, angle)
+    def create_bullet(self, angle, speed):
+        return EnemyBullets(self.rect.centerx, self.rect.centery, angle, speed)
 
 
 def draw_health_bar(surf, x, y, health, max_health):
