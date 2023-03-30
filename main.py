@@ -19,7 +19,7 @@ you_win = font.render("YOU WIN!", True, (0, 255, 0))
 you_lost = font.render("YOU LOST :(", True, (255, 0, 0))
 
 # Init enemy instance
-enemy = Enemy(50, 50, 300, 150, 100000)
+enemy = Enemy(50, 50, 300, 150, 10000)
 enemy_group = pygame.sprite.Group()
 enemy_group.add(enemy)
 
@@ -29,37 +29,47 @@ path_pattern_3 = [(100, 100), (500, 200), (500, 100), (100, 200)]
 path_pattern_4 = [(300, 200)]
 path_pattern_5 = [(100, 100), (500, 200), (500, 100), (100, 200)]
 
+# Init player instance
 player1 = Player()
 player_bullet_group = pygame.sprite.Group()
 enemy_bullet_group = pygame.sprite.Group()
-heart = pygame.image.load("CS152-Project/images/heart.png")
+heart = pygame.image.load("images/heart.png")
 
-next_time = 0  # for time counting
+player_next_time = 0  # for time counting
+enemy_next_time = 0  # for time counting
+
 gameIsRunning = True
 
 while gameIsRunning:
 
     start = pygame.time.get_ticks()
-    angle = 30  # angle that enemy bullets are shot
+    angle = 30  # angle that enemy bullets are shot\
 
     for event in pygame.event.get():
-        key_pressed = pygame.key.get_pressed()
         if event.type == pygame.QUIT:
             gameIsRunning = False
+
+    # player bullets
+    wait = 100
+    now = pygame.time.get_ticks()
+    key_pressed = pygame.key.get_pressed()
+    if now > player_next_time:
+        player_next_time += wait
         if key_pressed[K_z]:
             player_bullet_group.add(player1.create_bullet())
 
-    wait = 1500  # enemy shoot bullets every 1.5 seconds
+    # enemy bullets
+    wait = 500  # enemy shoot bullets every 1.5 seconds
     now = pygame.time.get_ticks()
-    if now > next_time:
-        next_time += wait
+    if now > enemy_next_time:
+        enemy_next_time += wait
         for i in range(12):
             angle += 30
             enemy_bullet_group.add(enemy.create_bullet(angle))
 
     # check for collisions between player and enemy bullets
     for enemy_bullet in enemy_bullet_group:
-        if enemy_bullet.rect.colliderect(player1.rect):
+        if enemy_bullet.rect.colliderect(player1.hitbox):
             player1.lives -= 1
             enemy_bullet.kill()
 
@@ -71,7 +81,7 @@ while gameIsRunning:
 
     player1.update()
     player_bullet_group.update()
-    screen.fill((0, 0, 0))
+    screen.fill((40, 127, 71))
     player1.draw(screen)
     player_bullet_group.draw(screen)
     enemy_group.draw(screen)
