@@ -37,11 +37,11 @@ heart = pygame.image.load("images/heart.png")
 
 player_next_time = 0  # for time counting
 enemy_next_time = 0  # for time counting
+spin = 0  # for spin iterating
 
-
-def do_bullet_pattern(bullet_amount, speed):
+def do_bullet_pattern(bullet_amount, speed, spin_delta):
     for b in range(bullet_amount):
-        enemy_bullet_group.add(enemy.create_bullet(b*(360/bullet_amount), speed))
+        enemy_bullet_group.add(enemy.create_bullet(b*(360/bullet_amount), speed, spin_delta))
 
 
 gameIsRunning = True
@@ -92,35 +92,36 @@ while gameIsRunning:
 
         if now > enemy_next_time:
             enemy_next_time += 1000
-            do_bullet_pattern(4, 4)
+            do_bullet_pattern(4, 4, 0)
 
     elif enemy.health >= enemy.max_health * (3 / 5):
         enemy.move_in_pattern(path_pattern_2, 5)
 
         if now > enemy_next_time:
             enemy_next_time += 600
-            do_bullet_pattern(6, 4)
+            do_bullet_pattern(6, 4, 0)
 
     elif enemy.health >= enemy.max_health * (2 / 5):
         enemy.move_in_pattern(path_pattern_3, 3)
 
         if now > enemy_next_time:
-            enemy_next_time += 200
-            do_bullet_pattern(16, 12)
+            enemy_next_time += 100
+            spin += 30
+            do_bullet_pattern(5, 4, spin % 360)
 
     elif enemy.health >= enemy.max_health * (1 / 5):
         enemy.move_in_pattern(path_pattern_4, 5)
 
         if now > enemy_next_time:
             enemy_next_time += 400
-            do_bullet_pattern(12, 2)
+            do_bullet_pattern(12, 2, 0)
 
     elif enemy.health > enemy.max_health * (0 / 5):
         enemy.move_in_pattern(path_pattern_5, 20)
 
         if now > enemy_next_time:
             enemy_next_time += 200
-            do_bullet_pattern(28, 2)
+            do_bullet_pattern(28, 2, 0)
 
     elif enemy.health <= 0:
         enemy.kill()
