@@ -14,9 +14,12 @@ pygame.display.set_caption("Game")
 
 # fonts and text
 font = pygame.font.SysFont("Arial", 60)
+font2 = pygame.font.SysFont("Arial", 40)
 game_over = font.render("Game Over", True, (255, 255, 255))
 you_win = font.render("YOU WIN!", True, (0, 255, 0))
 you_lost = font.render("YOU LOST :(", True, (255, 0, 0))
+restart = font2.render("-- Press SPACE to restart --", True, (173, 216, 230))
+quit = font2.render("-- Press q to quit --", True, (255, 165, 0))
 
 # Init enemy instance
 enemy = Enemy(50, 50, 300, 150, 20000)
@@ -39,9 +42,31 @@ player_next_time = 0  # for time counting
 enemy_next_time = 0  # for time counting
 spin = 0  # for spin iterating
 
+
 def do_bullet_pattern(bullet_amount, speed, spin_delta):
     for b in range(bullet_amount):
-        enemy_bullet_group.add(enemy.create_bullet(b*(360/bullet_amount), speed, spin_delta))
+        enemy_bullet_group.add(enemy.create_bullet(b * (360 / bullet_amount), speed, spin_delta))
+
+
+def handle_game_over():
+    event = pygame.event.wait()
+    if event.type == pygame.KEYDOWN:
+        # restart game
+        if event.key == pygame.K_SPACE:
+            enemy.rect.center = (300, 150)
+            enemy.health = 20000
+            player1.lives = 3
+            player1.rect.center = (160, 550)
+            for enemy_bullet in enemy_bullet_group:
+                enemy_bullet.kill()
+            for player_bullet in player_bullet_group:
+                player_bullet.kill()
+            pygame.display.update() # ??enemy bullets appear after restart (depends on how long you stay on game over page)
+
+        # quit game
+        if event.key == pygame.K_q:
+            pygame.quit()
+            sys.exit()
 
 
 gameIsRunning = True
@@ -49,7 +74,7 @@ gameIsRunning = True
 while gameIsRunning:
 
     start = pygame.time.get_ticks()
-    angle = 30  # angle that enemy bullets are shot\
+    # angle = 30  # angle that enemy bullets are shot\
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -74,7 +99,7 @@ while gameIsRunning:
     for player_bullet in player_bullet_group:
         if player_bullet.rect.colliderect(enemy.rect):
             player_bullet.kill()
-            enemy.health -= 100  # not updating the health bar
+            enemy.health -= 100
 
     player1.update()
     player_bullet_group.update()
@@ -84,6 +109,9 @@ while gameIsRunning:
     enemy_bullet_group.update()
     enemy_bullet_group.draw(screen)
     enemy_group.draw(screen)
+
+    draw_lives(screen, 500, 566, player1.lives, heart)
+    draw_health_bar(screen, 300, 20, enemy.health, enemy.max_health)
 
     # enemy movement and bullet patterns
     now = pygame.time.get_ticks()
@@ -124,27 +152,26 @@ while gameIsRunning:
             do_bullet_pattern(28, 2, 0)
 
     elif enemy.health <= 0:
-        enemy.kill()
+        # enemy.kill()
         screen.fill((0, 0, 0))
-        screen.blit(game_over, (145, 200))
-        screen.blit(you_win, (160, 250))
+        screen.blit(game_over, game_over.get_rect(center=(WIDTH / 2, 220)))
+        screen.blit(you_win, you_win.get_rect(center=screen.get_rect().center))
+        screen.blit(restart, restart.get_rect(center=(WIDTH / 2, 360)))
+        screen.blit(quit, quit.get_rect(center=(WIDTH / 2, 420)))
         pygame.display.update()
-        time.sleep(4)
-        pygame.quit()
-        sys.exit()
 
-    draw_lives(screen, 500, 566, player1.lives, heart)
-    draw_health_bar(screen, 300, 20, enemy.health, enemy.max_health)
+        handle_game_over()
 
     # game over if player has no more lives
     if player1.lives == 0:
         screen.fill((0, 0, 0))
-        screen.blit(game_over, (145, 200))
-        screen.blit(you_lost, (135, 250))
+        screen.blit(game_over, game_over.get_rect(center=(WIDTH / 2, 220)))
+        screen.blit(you_lost, you_lost.get_rect(center=screen.get_rect().center))
+        screen.blit(restart, restart.get_rect(center=(WIDTH / 2, 360)))
+        screen.blit(quit, quit.get_rect(center=(WIDTH / 2, 420)))
         pygame.display.update()
-        time.sleep(4)
-        pygame.quit()
-        sys.exit()
+
+        handle_game_over()
 
     # Update the screen at 60 FPS
     pygame.display.flip()

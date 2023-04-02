@@ -5,8 +5,9 @@ from .EnemyBullets import EnemyBullets
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, w, h, x, y, max_health):
         super().__init__()
-        self.image = pygame.Surface([w, h])  # replace with image later
-        self.image.fill((255, 0, 0))
+        #self.image = pygame.Surface([w, h])  # replace with image later
+        self.image = pygame.image.load("images/enemy.png")
+        #self.image.fill((255, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
         self.x = x
