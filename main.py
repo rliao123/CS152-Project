@@ -32,6 +32,11 @@ path_pattern_3 = [(300, 200)]
 path_pattern_4 = [(100, 300), (300, 100), (500, 300), (100, 175), (500, 175)]
 path_pattern_5 = [(100, 100), (500, 200), (500, 100), (100, 200)]
 
+enemy_bullets = [
+    pygame.image.load("images/enemy bullet 1.png"),
+    pygame.image.load("images/enemy bullet 2.png")
+]
+
 # Init player instance
 player1 = Player()
 player_bullet_group = pygame.sprite.Group()
@@ -47,7 +52,9 @@ bg_scroll = 0
 
 def do_bullet_pattern(bullet_amount, speed, spin_delta):
     for b in range(bullet_amount):
-        enemy_bullet_group.add(enemy.create_bullet(b * (360 / bullet_amount), speed, spin_delta))
+        enemy_bullet_group.add(enemy.create_bullet(enemy_bullets[0], b * (360 / bullet_amount), speed, spin_delta))
+    enemy_bullets.append(enemy_bullets[0])
+    enemy_bullets.pop(0)
 
 
 def handle_game_over():
@@ -63,7 +70,7 @@ def handle_game_over():
                 enemy_bullet.kill()
             for player_bullet in player_bullet_group:
                 player_bullet.kill()
-            pygame.display.update() # ??enemy bullets appear after restart (depends on how long you stay on game over page)
+            pygame.display.update()  # ??enemy bullets appear after restart (depends on how long you stay on game over page)
 
         # quit game
         if event.key == pygame.K_q:
@@ -113,6 +120,7 @@ while gameIsRunning:
         screen.blit(bg_img, (0, ((y * -bg_height) - bg_scroll)))
     if abs(bg_scroll) > bg_height:
         bg_scroll = 0
+    bg_scroll -= 1
 
     player1.draw(screen)
     player_bullet_group.draw(screen)
@@ -182,8 +190,6 @@ while gameIsRunning:
         pygame.display.update()
 
         handle_game_over()
-
-    bg_scroll -= 1
 
     # Update the screen at 60 FPS
     pygame.display.flip()
