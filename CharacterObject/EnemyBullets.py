@@ -7,7 +7,7 @@ alt_color = False
 class EnemyBullets(pygame.sprite.Sprite):
     def __init__(self, image, x, y, angle, speed, spin_delta):
         super().__init__()
-        self.image = pygame.transform.rotate(image, angle)
+        self.image = pygame.transform.rotate(image, angle + spin_delta)
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
         self.x = x
