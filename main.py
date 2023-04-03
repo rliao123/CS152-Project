@@ -2,6 +2,7 @@ import pygame, sys
 from CharacterObject.Enemy import Enemy, draw_health_bar
 from pygame.locals import *
 import random, time
+from itertools import cycle
 from CharacterObject.Player import Player, draw_lives
 
 pygame.init()
@@ -13,13 +14,20 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Game")
 
 # fonts and text
-font = pygame.font.SysFont("Arial", 60)
-font2 = pygame.font.SysFont("Arial", 40)
+font = pygame.font.SysFont("Comic Sans", 60)
+font2 = pygame.font.SysFont("Comic Sans", 40)
+font3 = pygame.font.SysFont("Comic Sans", 27)
+font4 = pygame.font.SysFont("Comic Sans", 80)
 game_over = font.render("Game Over", True, (255, 255, 255))
 you_win = font.render("YOU WIN!", True, (0, 255, 0))
 you_lost = font.render("YOU LOST :(", True, (255, 0, 0))
 restart = font2.render("-- Press SPACE to restart --", True, (173, 216, 230))
 quit = font2.render("-- Press q to quit --", True, (255, 165, 0))
+welcome = font4.render("Welcome!", True, (255, 255, 255))
+start_text = font2.render("Press SPACE to begin", True, (1, 50, 32))
+move = font3.render("Arrow Keys = Move", True, (10, 0, 150))
+shift = font3.render(" +LShift = Precise Move", True, (10, 0, 150))
+shoot = font3.render("Z = Shoot", True, (10, 0, 150))
 
 # Init enemy instance
 enemy = Enemy(50, 50, 300, 150, 20000)
@@ -78,6 +86,20 @@ def handle_game_over():
             sys.exit()
 
 
+game_start = True
+
+
+def start_game():
+    global game_start
+    event = pygame.event.wait()
+    if event.type == pygame.KEYDOWN:
+        # restart game
+        if event.key == pygame.K_SPACE:
+            game_start = False
+            pygame.display.update()
+    return
+
+
 gameIsRunning = True
 
 while gameIsRunning:
@@ -109,6 +131,18 @@ while gameIsRunning:
         if player_bullet.rect.colliderect(enemy.rect):
             player_bullet.kill()
             enemy.health -= 100
+
+    while game_start:
+        screen.fill((199, 120, 0))
+        start_img = pygame.image.load("images/start.png")
+        screen.blit(start_img, (0, 0))
+        screen.blit(welcome, welcome.get_rect(center=(1.1 * WIDTH / 3, 100)))
+        screen.blit(start_text, start_text.get_rect(center=(1.2 * WIDTH / 2, 0.65 * HEIGHT / 2)))
+        screen.blit(move, move.get_rect(center=(1.55 * WIDTH / 2, 1.3 * HEIGHT / 2)))
+        screen.blit(shift, shift.get_rect(center=(1.48 * WIDTH / 2, 1.43 * HEIGHT / 2)))
+        screen.blit(shoot, shoot.get_rect(center=(1.4 * WIDTH / 2, 1.57 * HEIGHT / 2)))
+        pygame.display.update()
+        start_game()
 
     player1.update()
     player_bullet_group.update()
