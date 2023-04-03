@@ -42,6 +42,8 @@ player_next_time = 0  # for time counting
 enemy_next_time = 0  # for time counting
 spin = 0  # for spin iterating
 
+bg_scroll = 0
+
 
 def do_bullet_pattern(bullet_amount, speed, spin_delta):
     for b in range(bullet_amount):
@@ -103,7 +105,15 @@ while gameIsRunning:
 
     player1.update()
     player_bullet_group.update()
+
     screen.fill((40, 127, 71))
+    bg_img = pygame.image.load("images/background grass.png")
+    bg_height = bg_img.get_width()
+    for y in range(2):
+        screen.blit(bg_img, (0, ((y * -bg_height) - bg_scroll)))
+    if abs(bg_scroll) > bg_height:
+        bg_scroll = 0
+
     player1.draw(screen)
     player_bullet_group.draw(screen)
     enemy_bullet_group.update()
@@ -172,6 +182,8 @@ while gameIsRunning:
         pygame.display.update()
 
         handle_game_over()
+
+    bg_scroll -= 1
 
     # Update the screen at 60 FPS
     pygame.display.flip()
