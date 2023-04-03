@@ -2,12 +2,12 @@ import pygame
 import math
 
 
+alt_color = False
+
 class EnemyBullets(pygame.sprite.Sprite):
-    def __init__(self, x, y, angle, speed, spin_delta):
+    def __init__(self, image, x, y, angle, speed, spin_delta):
         super().__init__()
-       # self.image = pygame.Surface([15, 15])
-       # self.image.fill((255, 255, 255))
-        self.image = pygame.image.load("images/enemy bullet.png")
+        self.image = pygame.transform.rotate(image, angle)
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
         self.x = x
@@ -17,7 +17,7 @@ class EnemyBullets(pygame.sprite.Sprite):
         self.spin_delta = spin_delta
 
     def update(self):
-        self.rect.x += self.speed * math.cos(math.radians(self.angle + self.spin_delta))
+        self.rect.x -= self.speed * math.cos(math.radians(self.angle + self.spin_delta))
         self.rect.y += self.speed * math.sin(math.radians(self.angle + self.spin_delta))
         if self.rect.top < 0 or self.rect.bottom > 600 or self.rect.right > 600 or self.rect.left < 0:
             self.kill()
