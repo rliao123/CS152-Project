@@ -1,8 +1,6 @@
 import pygame, sys
 from CharacterObject.Enemy import Enemy, draw_health_bar
 from pygame.locals import *
-import random, time
-from itertools import cycle
 from CharacterObject.Player import Player, draw_lives
 
 pygame.init()
@@ -22,7 +20,7 @@ game_over = font.render("Game Over", True, (255, 255, 255))
 you_win = font.render("YOU WIN!", True, (0, 255, 0))
 you_lost = font.render("YOU LOST :(", True, (255, 0, 0))
 restart = font2.render("-- Press SPACE to restart --", True, (173, 216, 230))
-quit = font2.render("-- Press q to quit --", True, (255, 165, 0))
+quit_text = font2.render("-- Press q to quit --", True, (255, 165, 0))
 welcome = font4.render("Welcome!", True, (255, 255, 255))
 start_text = font2.render("Press SPACE to begin", True, (1, 50, 32))
 move = font3.render("Arrow Keys = Move", True, (10, 0, 150))
@@ -66,38 +64,47 @@ def do_bullet_pattern(bullet_amount, speed, spin_delta):
 
 
 def handle_game_over():
-    event = pygame.event.wait()
-    if event.type == pygame.KEYDOWN:
+    event_over = pygame.event.wait()
+    if event_over.type == pygame.KEYDOWN:
         # restart game
-        if event.key == pygame.K_SPACE:
+        if event_over.key == pygame.K_SPACE:
             enemy.rect.center = (300, 150)
             enemy.health = 20000
             player1.lives = 3
             player1.rect.center = (160, 550)
-            for enemy_bullet in enemy_bullet_group:
-                enemy_bullet.kill()
-            for player_bullet in player_bullet_group:
-                player_bullet.kill()
-            pygame.display.update()  # ??enemy bullets appear after restart (depends on how long you stay on game over page)
-
+            for enemy_bullet_i in enemy_bullet_group:
+                enemy_bullet_i.kill()
+            for player_bullet_i in player_bullet_group:
+                player_bullet_i.kill()
+            pygame.display.update()
         # quit game
-        if event.key == pygame.K_q:
+        if event_over.key == pygame.K_q:
             pygame.quit()
             sys.exit()
 
 
 game_start = True
+time_event = pygame.USEREVENT + 0
+pygame.time.set_timer(time_event, 1000)
+blink_end_time = 0
 
 
 def start_game():
-    global game_start
-    event = pygame.event.wait()
-    if event.type == pygame.KEYDOWN:
-        # restart game
-        if event.key == pygame.K_SPACE:
+    global game_start, start_text, blink_end_time, now, enemy_next_time
+    event_start = pygame.event.wait()
+    current_time = pygame.time.get_ticks()
+    if event_start.type == pygame.KEYDOWN:
+        # start game
+        if event_start.key == pygame.K_SPACE:
             game_start = False
+            enemy_next_time = pygame.time.get_ticks()
+            return
+    # for blinking text
+    if event_start.type == time_event:
+        while current_time > blink_end_time:
+            blink_end_time += 20
+            screen.blit(start_text, start_text.get_rect(center=(1.2 * WIDTH / 2, 0.65 * HEIGHT / 2)))
             pygame.display.update()
-    return
 
 
 gameIsRunning = True
@@ -105,7 +112,6 @@ gameIsRunning = True
 while gameIsRunning:
 
     start = pygame.time.get_ticks()
-    # angle = 30  # angle that enemy bullets are shot\
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -132,12 +138,12 @@ while gameIsRunning:
             player_bullet.kill()
             enemy.health -= 100
 
+    # start screen
     while game_start:
         screen.fill((199, 120, 0))
         start_img = pygame.image.load("images/start.png")
         screen.blit(start_img, (0, 0))
         screen.blit(welcome, welcome.get_rect(center=(1.1 * WIDTH / 3, 100)))
-        screen.blit(start_text, start_text.get_rect(center=(1.2 * WIDTH / 2, 0.65 * HEIGHT / 2)))
         screen.blit(move, move.get_rect(center=(1.55 * WIDTH / 2, 1.3 * HEIGHT / 2)))
         screen.blit(shift, shift.get_rect(center=(1.48 * WIDTH / 2, 1.43 * HEIGHT / 2)))
         screen.blit(shoot, shoot.get_rect(center=(1.4 * WIDTH / 2, 1.57 * HEIGHT / 2)))
@@ -167,6 +173,7 @@ while gameIsRunning:
 
     # enemy movement and bullet patterns
     now = pygame.time.get_ticks()
+
     if enemy.health >= enemy.max_health * (4 / 5):
         enemy.move_in_pattern(path_pattern_1, 2)
 
@@ -204,25 +211,22 @@ while gameIsRunning:
             do_bullet_pattern(28, 2, 0)
 
     elif enemy.health <= 0:
-        # enemy.kill()
         screen.fill((0, 0, 0))
         screen.blit(game_over, game_over.get_rect(center=(WIDTH / 2, 220)))
         screen.blit(you_win, you_win.get_rect(center=screen.get_rect().center))
         screen.blit(restart, restart.get_rect(center=(WIDTH / 2, 360)))
-        screen.blit(quit, quit.get_rect(center=(WIDTH / 2, 420)))
+        screen.blit(quit_text, quit_text.get_rect(center=(WIDTH / 2, 420)))
         pygame.display.update()
-
         handle_game_over()
 
     # game over if player has no more lives
-    if player1.lives == 0:
+    if player1.lives <= 0:
         screen.fill((0, 0, 0))
         screen.blit(game_over, game_over.get_rect(center=(WIDTH / 2, 220)))
         screen.blit(you_lost, you_lost.get_rect(center=screen.get_rect().center))
         screen.blit(restart, restart.get_rect(center=(WIDTH / 2, 360)))
-        screen.blit(quit, quit.get_rect(center=(WIDTH / 2, 420)))
+        screen.blit(quit_text, quit_text.get_rect(center=(WIDTH / 2, 420)))
         pygame.display.update()
-
         handle_game_over()
 
     # Update the screen at 60 FPS
