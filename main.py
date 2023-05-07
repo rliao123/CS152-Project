@@ -81,6 +81,7 @@ def handle_game_over():
     Listens to user-input for restarting (Space )or quitting the game (q)
     """
 
+    global enemy_next_time
     event_over = pygame.event.wait()
     if event_over.type == pygame.KEYDOWN:
         # restart game
@@ -93,6 +94,7 @@ def handle_game_over():
                 enemy_bullet_i.kill()
             for player_bullet_i in player_bullet_group:
                 player_bullet_i.kill()
+            enemy_next_time = pygame.time.get_ticks()
             pygame.display.update()
         # quit game
         if event_over.key == pygame.K_q:
