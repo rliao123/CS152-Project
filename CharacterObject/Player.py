@@ -5,7 +5,9 @@ import random
 
 
 class Player(pygame.sprite.Sprite):
+    """A class used to represent Player"""
     def __init__(self):
+        """Initializes Player object"""
         super().__init__()
         self.image = pygame.image.load("images/player.png")
         self.rect = self.image.get_rect()
@@ -17,6 +19,11 @@ class Player(pygame.sprite.Sprite):
         self.hideTimer = pygame.time.get_ticks()
 
     def update(self):
+        """Update and move the player's rect according to keys pressed and set player's hitbox
+        Does not allow player to move outside of screen's borders
+        Player's coordinates change a smaller amount if left shift key and arrow key are clicked simultaneously
+        """
+
         key_pressed = pygame.key.get_pressed()
 
         if self.rect.top > 0:
@@ -44,18 +51,26 @@ class Player(pygame.sprite.Sprite):
         self.hitbox.center = self.rect.center
 
     def draw(self, surface):
+        """Draw player and player's hitbox on surface"""
         surface.blit(pygame.Surface([6, 6]), self.hitbox)
-        surface.blit(self.image, self.rect)  # move this line above the previous line to preview hitbox size
+        surface.blit(self.image, self.rect)
 
     def create_bullet(self):
-        # create bullet from top center of sprite
+        """Create player bullet with top center of sprite coordinates"""
+
         return PlayerBullets(self.rect.x + 50 / 2, self.rect.y)
 
 
-player1 = Player()
-
-
 def draw_lives(surf, x, y, lives, img):
+    """Draw life icons according to amount of lives player has
+
+    surf -- surface to display image on
+    x -- x coordinate to draw lives
+    y -- y coordinate to draw lives
+    lives -- amount of lives player has
+    img -- icon to represent the lives
+    """
+
     for i in range(lives):
         img_rect = img.get_rect()
         img_rect.x = x + 33 * i
