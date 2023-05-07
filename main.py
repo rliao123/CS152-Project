@@ -3,9 +3,12 @@ from CharacterObject.Enemy import Enemy, draw_health_bar
 from pygame.locals import *
 from CharacterObject.Player import Player, draw_lives
 
+# Init the game and its clock
+# clock is used for rendering
 pygame.init()
 clock = pygame.time.Clock()
 
+# Set the screen resolution of the game window
 WIDTH = 600
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -32,6 +35,7 @@ enemy = Enemy(50, 50, 300, 150, 20000)
 enemy_group = pygame.sprite.Group()
 enemy_group.add(enemy)
 
+# enemy movement patterns
 path_pattern_1 = [(100, 150), (300, 150), (500, 150), (300, 150)]
 path_pattern_2 = [(100, 100), (500, 200), (500, 100), (100, 200)]
 path_pattern_3 = [(300, 200)]
@@ -51,12 +55,20 @@ heart = pygame.image.load("images/heart.png")
 
 player_next_time = 0  # for time counting
 enemy_next_time = 0  # for time counting
-spin = 0  # for spin iterating
-
+spin = 0  # for spin angle iterating
 bg_scroll = 0
 
 
 def do_bullet_pattern(bullet_amount, speed, spin_delta):
+    """Procedure for the enemy's bullet pattern.
+
+    bullet_amount -- number of bullets in the circle
+
+    speed -- the distance traveled every nth frame
+
+    spin_delta -- the difference in angle every nth frame
+    """
+
     for b in range(bullet_amount):
         enemy_bullet_group.add(enemy.create_bullet(enemy_bullets[0], b * (360 / bullet_amount), speed, spin_delta))
     enemy_bullets.append(enemy_bullets[0])
@@ -64,6 +76,11 @@ def do_bullet_pattern(bullet_amount, speed, spin_delta):
 
 
 def handle_game_over():
+    """Handles the "Game Over" screen
+
+    Listens to user-input for restarting (Space )or quitting the game (q)
+    """
+
     event_over = pygame.event.wait()
     if event_over.type == pygame.KEYDOWN:
         # restart game
@@ -83,6 +100,7 @@ def handle_game_over():
             sys.exit()
 
 
+# state variables for start_game function
 game_start = True
 time_event = pygame.USEREVENT + 0
 pygame.time.set_timer(time_event, 1000)
@@ -90,6 +108,11 @@ blink_end_time = 0
 
 
 def start_game():
+    """Handles the "Start Game" screen
+
+    Listens to user-input for starting the game (Space)
+    """
+
     global game_start, start_text, blink_end_time, now, enemy_next_time
     event_start = pygame.event.wait()
     current_time = pygame.time.get_ticks()
@@ -107,10 +130,9 @@ def start_game():
             pygame.display.update()
 
 
+# Main game loop for running procedural code
 gameIsRunning = True
-
 while gameIsRunning:
-
     start = pygame.time.get_ticks()
 
     for event in pygame.event.get():
@@ -150,9 +172,11 @@ while gameIsRunning:
         pygame.display.update()
         start_game()
 
+    # Update player and player_bullet_group states
     player1.update()
     player_bullet_group.update()
 
+    # Draw background
     screen.fill((40, 127, 71))
     bg_img = pygame.image.load("images/background grass.png")
     bg_height = bg_img.get_width()
@@ -162,23 +186,26 @@ while gameIsRunning:
         bg_scroll = 0
     bg_scroll -= 1
 
+    # Draw objects on top of the background
     player1.draw(screen)
     player_bullet_group.draw(screen)
     enemy_bullet_group.update()
     enemy_bullet_group.draw(screen)
     enemy_group.draw(screen)
 
+    # Draw lives for player and enemy
     draw_lives(screen, 500, 566, player1.lives, heart)
     draw_health_bar(screen, 300, 20, enemy.health, enemy.max_health)
 
-    # enemy movement and bullet patterns
+    # determine enemy movement and bullet patterns
+    # could be made more concise/reusable by using look-up tables
     now = pygame.time.get_ticks()
 
-    if enemy.health >= enemy.max_health * (4 / 5):
-        enemy.move_in_pattern(path_pattern_1, 2)
+    if enemy.health >= enemy.max_health * (4 / 5): # % of enemy health
+        enemy.move_in_pattern(path_pattern_1, 2) # pattern 1 with speed 2
 
         if now > enemy_next_time:
-            enemy_next_time += 1000
+            enemy_next_time += 1000 # every 1000th frame
             do_bullet_pattern(4, 4, 0)
 
     elif enemy.health >= enemy.max_health * (3 / 5):
@@ -210,7 +237,7 @@ while gameIsRunning:
             enemy_next_time += 200
             do_bullet_pattern(28, 2, 0)
 
-    elif enemy.health <= 0:
+    elif enemy.health <= 0: # game over if enemy dies
         screen.fill((0, 0, 0))
         screen.blit(game_over, game_over.get_rect(center=(WIDTH / 2, 220)))
         screen.blit(you_win, you_win.get_rect(center=screen.get_rect().center))
